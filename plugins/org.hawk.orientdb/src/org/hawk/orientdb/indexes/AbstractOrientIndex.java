@@ -139,7 +139,6 @@ public class AbstractOrientIndex {
 		final boolean txWasOpen = graph.getGraph().getTransaction().isActive();
 		if (txWasOpen) {
 			graph.getConsole().println("Warning: prematurely committing a transaction so we can create index " + idxName);
-			graph.saveDirty();
 			graph.getGraph().commit();
 			// OrientDB needs to explicitly close tx
 			graph.getGraph().getTransaction().close();

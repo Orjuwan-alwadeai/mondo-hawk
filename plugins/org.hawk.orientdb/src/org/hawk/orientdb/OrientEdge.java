@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hawk.core.graph.IGraphEdge;
+import org.hawk.orientdb.indexes.IndexBasedEdgeStore;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
@@ -44,9 +45,9 @@ public class OrientEdge implements IGraphEdge {
 
 	/** Should be used when the ID is persistent, to save memory. */
 	public OrientEdge(ORID id, OrientDatabase graph) {
-		if (!id.isPersistent()) {
-			graph.getConsole().printerrln("Warning, unsafe: OrientEdge(ORID) used with non-persistent ID " + id);
-		}
+//		if (!id.isPersistent()) {
+//			graph.getConsole().printerrln("Warning, unsafe: OrientEdge(ORID) used with non-persistent ID " + id);
+//		}
 		this.id = id;
 		this.db = graph;
 	}
@@ -92,7 +93,7 @@ public class OrientEdge implements IGraphEdge {
 	public void setProperty(String name, Object value) {
 		changedEdge = getDocument();
 		changedEdge.field(name, value);
-		db.markEdgeAsDirty(this);
+		changedEdge.save();
 	}
 
 	public OrientNode getStartNode() {
@@ -120,14 +121,8 @@ public class OrientEdge implements IGraphEdge {
 	}
 
 	public void delete() {
-		final OrientNode startNode = getStartNode();
-		final OrientNode endNode = getEndNode();
-		startNode.removeOutgoing(this);
-		endNode.removeIncoming(this);
-
-		db.markNodeAsDirty(startNode);
-		db.markNodeAsDirty(endNode);
-		db.unmarkEdgeAsDirty(this);
+		IndexBasedEdgeStore edgeStore = new IndexBasedEdgeStore(db);
+		edgeStore.remove(this);
 		db.getGraph().delete(getId());
 
 		changedEdge = null;
@@ -136,7 +131,7 @@ public class OrientEdge implements IGraphEdge {
 	public void removeProperty(String name) {
 		changedEdge = getDocument();
 		changedEdge.removeField(name);
-		db.markEdgeAsDirty(this);
+		changedEdge.save();
 	}
 
 	@Override
@@ -215,8 +210,8 @@ public class OrientEdge implements IGraphEdge {
 		} else {
 			newEdge = new OrientEdge(newDoc, graph);
 		}
-		start.addOutgoing(newEdge);
-		end.addIncoming(newEdge);
+		IndexBasedEdgeStore edgeStore = new IndexBasedEdgeStore(graph);
+		edgeStore.add(newEdge);
 
 		return newEdge;
 	}
