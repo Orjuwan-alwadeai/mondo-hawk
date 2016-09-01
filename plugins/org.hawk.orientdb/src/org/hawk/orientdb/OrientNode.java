@@ -286,7 +286,8 @@ public class OrientNode implements IGraphNode {
 			return vertex;
 		}
 
-		final ODocument loaded = graph.getGraph().load(getId());
+		// Load edge docs and the end nodes as well
+		final ODocument loaded = graph.getGraph().load(getId(), "*:1");
 		if (loaded != null) {
 			loaded.deserializeFields();
 		}

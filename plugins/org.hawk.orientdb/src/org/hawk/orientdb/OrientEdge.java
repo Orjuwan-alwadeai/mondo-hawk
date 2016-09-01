@@ -183,7 +183,8 @@ public class OrientEdge implements IGraphEdge {
 			return dirtyEdge;
 		}
 
-		final ODocument loaded = db.getGraph().load(getId());
+		// Load neighbors as well
+		final ODocument loaded = db.getGraph().load(getId(), "*:1");
 		if (loaded == null) {
 			db.getConsole().printerrln("Loading edge with id " + getId() + " from OrientDB produced null value");
 			Thread.dumpStack();
