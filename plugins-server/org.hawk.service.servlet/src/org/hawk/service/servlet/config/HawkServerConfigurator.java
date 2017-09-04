@@ -39,6 +39,7 @@ import org.hawk.service.servlet.config.RepositoryParameters;
 
 public class HawkServerConfigurator  {
 
+
 	private List<HawkInstanceConfig> hawkInstanceConfigs;
 	private Iface iface;
 	private HManager manager;

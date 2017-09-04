@@ -60,7 +60,7 @@ public class ModelioModelResourceFactory implements IModelResourceFactory {
 	public IHawkModelResource parse(IFileImporter importer, File f) throws Exception {
 
 		// TODO use importer to grab MMVERSION_DAT instead of assuming it'll appear here.
-
+		extractVersionsForModel(importer, f);
 		if (f.getName().toLowerCase().endsWith(MMVERSION_DAT)) {
 			readMMVersionDat(f);
 			Iterable<ExmlObject> emptyList = new ArrayList<ExmlObject>();
@@ -106,6 +106,36 @@ public class ModelioModelResourceFactory implements IModelResourceFactory {
 		}
 		
 		return mmPackageVersions.get(pkgName);
+	}
+
+	private void extracVersionsForModel(IFileImporter importer, File f) throws IOException {
+		
+		int maxSearchDepth = 4;
+		String parentName = "";
+		Boolean lastTry = false;
+		
+		File parentFile = f.getParentFile(); // get parent folder name
+		
+		for(int i = 0; i < maxSearchDepth; i++) {
+			if(parentFile != null) {
+				parentName = parentFile.getName();
+				parentFile = parentFile.getParentFile();
+			} else {
+				parentName = "";
+				lastTry = true;
+			}
+			
+			String versionPath = (parentName +  "/admin2/mmversion.dat");
+			File versionFile = importer.importFile(versionPath);
+			if(versionFile.exists()) {
+				readMMVersionDat(versionFile);
+				break;
+			}
+			
+			if(lastTry) {
+				break;
+			}
+		}
 	}
 	
 	private void readMMVersionDat(File f) throws IOException{
