@@ -165,7 +165,6 @@ public class RegisterMeta {
 		if(versions != null) {
 			return versions.lastKey();
 		}
-		
 		return null;
 	}
 	
