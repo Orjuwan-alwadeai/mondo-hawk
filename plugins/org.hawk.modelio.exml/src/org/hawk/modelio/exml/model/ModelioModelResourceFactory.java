@@ -108,7 +108,7 @@ public class ModelioModelResourceFactory implements IModelResourceFactory {
 		return mmPackageVersions.get(pkgName);
 	}
 
-	private void extracVersionsForModel(IFileImporter importer, File f) throws IOException {
+	private void extractVersionsForModel(IFileImporter importer, File f) throws IOException {
 		
 		int maxSearchDepth = 4;
 		String parentName = "";
